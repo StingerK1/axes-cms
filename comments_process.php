@@ -26,27 +26,29 @@
     }
 
     function share() {
+
+        if (isset($_POST['captcha']) && $_SESSION['captchaText'] == $_POST['captcha']) {
             
-        $userId = $_SESSION['userId'];
-        $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $discussionId = filter_input(INPUT_GET, 'discussionId', FILTER_SANITIZE_NUMBER_INT);
+            $userId = $_SESSION['userId'];
+            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $discussionId = filter_input(INPUT_GET, 'discussionId', FILTER_SANITIZE_NUMBER_INT);
 
-        if ($_POST && isset($_SESSION['userId']) && isset($_GET['discussionId']) && !empty($_POST['comment'])) {
+            if ($_POST && isset($_SESSION['userId']) && isset($_GET['discussionId']) && !empty($_POST['comment'])) {
 
-            require('connect.php');
+                require('connect.php');
 
-            $query = "INSERT INTO comments (userId, comment, discussionId) VALUES (:userId, :comment, :discussionId)";
-            $statement = $db->prepare($query);
-        
-            $statement->bindValue(":userId", $userId);
-            $statement->bindValue(":comment", $comment);
-            $statement->bindValue(":discussionId", $discussionId);
-        
-            $statement->execute();
-            header("Location: show.php?discussionId=" . $_GET['discussionId']);
-            exit();
+                $query = "INSERT INTO comments (userId, comment, discussionId) VALUES (:userId, :comment, :discussionId)";
+                $statement = $db->prepare($query);
+            
+                $statement->bindValue(":userId", $userId);
+                $statement->bindValue(":comment", $comment);
+                $statement->bindValue(":discussionId", $discussionId);
+            
+                $statement->execute();
+                header("Location: show.php?discussionId=" . $_GET['discussionId']);
+                exit();
+            }
         }
-        
     }   
     
     function save() {

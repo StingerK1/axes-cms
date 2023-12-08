@@ -79,6 +79,13 @@ require('connect.php');
                   </div>             
                 </div>
                 <br>
+                <!-- Captcha -->
+                <div class="text-center mb-5">
+                  <div class="input-group">
+                    <img src="captcha.php" alt="CAPTCHA" class="captcha-image center-block">    
+                    <input type="text" class="form-control" id="captcha" name="captcha" placeholder="Enter your code here">
+                  </div>         
+                </div>
               </div>         
             </div>
           </div>
