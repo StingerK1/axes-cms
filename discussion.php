@@ -8,6 +8,9 @@
 
     $thisPage = 'discussion';
 
+    //Sets numbers of rows to be displayed per page
+    $rows_per_page = 6;
+
     //connec to the database
     require('connect.php');
 
@@ -19,6 +22,27 @@
     $statement = $db->prepare($query);
     $statement->execute();
 
+    //Determines which page number visitor is currently on
+    if (!isset($_GET['page'])) {
+        $page = 1;
+    }
+    else {
+        $page = $_GET['page'];
+    }
+
+    // Counts the rows present in the database.
+    $number_of_rows = $statement->rowCount();
+
+    // Determines the number of total pages available.
+    $number_of_pages = ceil($number_of_rows / $rows_per_page);
+
+    // Determines the LIMIT starting number for display
+    $first_page = ($page - 1) * $rows_per_page;
+
+    //Retrieve selected results from database and display them on page
+    $query = "SELECT * FROM discussion JOIN users ON discussion.userId = users.userId ORDER BY datetime DESC LIMIT " . $first_page . ',' . $rows_per_page;
+    $statement = $db->prepare($query);
+    $statement->execute(); 
         
 ?>
 
@@ -59,6 +83,7 @@
                 <div class="row">     
                     <?php while($row = $statement->fetch()): ?>    
                     <div class="col-lg-4">      
+                        <img src="<?="uploads/" . $row['image'] ?>" style="max-width:100px;margin:auto;" class="bd-placeholder-img rounded-circle" alt="<?= $row['username'] ?> profile">
                         <h4 class="fw-normal"><?= $row['title'] ?></h4>
                         <p><?= strlen($row['discussionPost']) >= 110 ? substr($row['discussionPost'], 0, 110) . "..." : $row['discussionPost'] ?></p>
                         <p><a class="btn btn-primary" href="show.php?discussionId=<?= $row['discussionId'] ?>">View Post »</a></p>
@@ -66,6 +91,28 @@
                         <input type="hidden" name="userId" value="<?= $row['userId'] ?>" />
                     </div><!-- /.col-lg-4 -->
                     <?php endwhile ?>
+
+                    <!-- Page -->
+                    <nav aria-label="Page navigation example" style="max-width:100px;margin:auto;" class="text-center">
+                        <ul class="pagination justify-content-center">
+                            <?php if ($page > 1): ?>
+                                <li class="page-item">
+                                    <a href="discussion.php?page=<?= ($page - 1) ?>" aria-label="Previous" style="color: #0d6efd;" class="page-link">Previous</a>
+                                </li>
+                            <?php endif ?>
+                            <?php for ($i = 1; $i <= $number_of_pages; $i++): ?>
+                                <?php if ($page == $i) { $status = "active"; } else { $status = ""; } ?>
+                                <li class="<?= $status ?>">
+                                    <a href="discussion.php?page=<?= $i ?>" class="page-link" style="background-color: #0d6efd; color: #fff;"><?= $i ?></a>
+                                </li>
+                            <?php endfor ?>
+                            <?php if ($number_of_pages > $page): ?>
+                                <li>
+                                    <a href="discussion.php?page=<?= ($page + 1) ?>" aria-label="Next" class="page-link" style="color: #0d6efd;">Next</a>
+                                </li>
+                            <?php endif ?>
+                        </ul>
+                    </nav>
 
                 </div><!-- /.row -->
             </div><!-- /.container marketing -->
