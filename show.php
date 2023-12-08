@@ -61,5 +61,67 @@ require('connect.php');
       <div><?= $row['discussionPost'] ?></div>
     </div>
 
+    <!-- Comments --> 
+    <div style="max-width:700px;margin:auto;">                   
+        <h3>Comments</h3>                  
+    </div>
+
+    <!-- Leave a Comment -->
+      <form style="max-width:700px;margin:auto;" action="comments_process.php?discussionId=<?= $_GET['discussionId'] ?>" method="post">
+        <div class="panel">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-md-11">
+                <input class="form-control" name="comment" id="comment" type="text" placeholder="Leave a Comment">
+                </div>
+                  <div class="col-md-1">
+                    <input class="btn btn-primary" name="share" type="submit" style="color: #b4c8ea" value="Comment">
+                  </div>             
+                </div>
+                <br>
+              </div>         
+            </div>
+          </div>
+        </div>
+      </form>  
+
+      <!-- Display Comments -->
+      <div style="max-width:700px;margin:auto;" class="panel-body">
+        <ul class="list-group">
+          <?php while($row2 = $statement2->fetch()): ?>
+            <li class="list-group-item">
+              <div>
+                <div>
+                  <table id="display">
+                    <tr>
+                      <td style="color: gray"><img src="<?="uploads/" . $row2['image'] ?>" style="max-width:40px;margin:auto;" class="bd-placeholder-img rounded-circle" alt="" /> <i><?= $row2['username'] ?></i> - <?= date("M j, Y, g:i a", strtotime($row2['datetime'])) ?></td>
+                    </tr>
+                    <tr>
+                      <td><b class="display-6" style="font-size: 30px"><?= $row2['comment'] ?></b></td>
+                    </tr>
+                  </table>
+                  <div class="action">
+                    <form action="comments_process.php?discussionId=<?= $_GET['discussionId'] ?>" method="post"> 
+                      <input type="hidden" name="commentId" value="<?= $row2['commentId'] ?>" />
+                      <!-- <?php if ($loggedInUser == $row2['username']): ?>
+                        <a class="btn btn-primary" href="comments_edit.php?discussionId=<?= $row2['discussionId'] ?>&commentId=<?= $row2['commentId'] ?>">Edit</a>
+                      <?php endif ?> -->
+                      <?php if ($loggedInUser == 'admin' || $loggedInUser == $row2['username']): ?>
+                        <div class="text-end">
+                          <input type="submit" name="delete" class="btn btn-secondary" value="Delete" onclick="return confirm('Are you sure you wish to delete this comment?')" />
+                        </div>
+                      <?php endif ?>
+                    </form>  
+                  </div> 
+                </div>
+              </div>
+            </li>
+          <?php endwhile ?> 
+        </ul>
+      </div>  
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>    
+    <script src="js/bootstrap.min.js"></script>
+
     </body>
 </html>
